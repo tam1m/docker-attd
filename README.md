@@ -1,13 +1,11 @@
 # AMTD - Automated TV Show Trailer Downloader 
-[![Docker Build](https://img.shields.io/docker/cloud/automated/randomninjaatk/amtd?style=flat-square)](https://hub.docker.com/r/huteri/attd)
-[![Docker Pulls](https://img.shields.io/docker/pulls/randomninjaatk/amtd?style=flat-square)](https://hub.docker.com/r/huteri/attd)
-[![Docker Stars](https://img.shields.io/docker/stars/randomninjaatk/amtd?style=flat-square)](https://hub.docker.com/r/huteri/attd)
+[![Docker Build](https://img.shields.io/docker/cloud/automated/huteri/attd?style=flat-square)](https://hub.docker.com/r/huteri/attd)
+[![Docker Pulls](https://img.shields.io/docker/pulls/huteri/attd?style=flat-square)](https://hub.docker.com/r/huteri/attd)
+[![Docker Stars](https://img.shields.io/docker/stars/huteri/attd?style=flat-square)](https://hub.docker.com/r/huteri/attd)
 [![Docker Hub](https://img.shields.io/badge/Open%20On-DockerHub-blue?style=flat-square)](https://hub.docker.com/r/huteri/attd)
 
 Sonarr adaptation of RandomNinjatAtk/amtd to automatically download trailers for tv shows. Tested only with plex
 
-
-[![RandomNinjaAtk/amtd](https://raw.githubusercontent.com/RandomNinjaAtk/unraid-templates/master/randomninjaatk/img/amtd.png)](https://github.com/RandomNinjaAtk/docker-amtd)
 
 
 ## Features
@@ -28,13 +26,13 @@ The architectures supported by this image are:
 
 | Architecture | Tag |
 | :----: | --- |
-| x86-64 | latest |
+| x86-64 | master |
 
 ## Version Tags
 
 | Tag | Description |
 | :----: | --- |
-| latest | Newest release code |
+| master | Newest release code |
 
 
 ## Parameters
@@ -66,7 +64,7 @@ Container images are configured using parameters passed at runtime (such as thos
 
 ```
 docker create \
-  --name=amtd \
+  --name=attd \
   -v /path/to/config/files:/config \
   -v /change/me/to/match/radarr:/change/me/to/match/radarr \
   -e PUID=1000 \
@@ -85,7 +83,7 @@ docker create \
   -e RadarrUrl=http://x.x.x.x:7878 \
   -e RadarrAPIkey=RADARRAPIKEY \
   --restart unless-stopped \
-  randomninjaatk/amtd 
+  huteri/attd 
 ```
 
 
@@ -97,7 +95,7 @@ Compatible with docker-compose v2 schemas.
 version: "2.1"
 services:
   amd:
-    image: randomninjaatk/amtd 
+    image: huteri/attd
     container_name: amtd
     volumes:
       - /path/to/config/files:/config
@@ -123,7 +121,7 @@ services:
 
 # Script Information
 * Script will automatically run when enabled, if disabled, you will need to manually execute with the following command:
-  * From Host CLI: `docker exec -it amtd /bin/bash -c 'bash /config/scripts/download.bash'`
+  * From Host CLI: `docker exec -it attd /bin/bash -c 'bash /config/scripts/download.bash'`
   * From Docker CLI: `bash /config/scripts/download.bash`
   
 ## Directories:
