@@ -4,7 +4,7 @@
 [![Docker Stars](https://img.shields.io/docker/stars/huteri/attd?style=flat-square)](https://hub.docker.com/r/huteri/attd)
 [![Docker Hub](https://img.shields.io/badge/Open%20On-DockerHub-blue?style=flat-square)](https://hub.docker.com/r/huteri/attd)
 
-Modified version of AMTD to make it work with sonarr. Tested only on plex.
+Modified version of RandomNinjaAtk/docker-amtd to make it work with sonarr. Tested only on plex.
 
 ## Features
 * Downloading **TV Shows Trailers** and **Extras** using online sources for use in popular applications (Plex/Kodi/Emby/Jellyfin): 
@@ -24,13 +24,13 @@ The architectures supported by this image are:
 
 | Architecture | Tag |
 | :----: | --- |
-| x86-64 | master |
+| x86-64 | latest |
 
 ## Version Tags
 
 | Tag | Description |
 | :----: | --- |
-| master | Newest release code |
+| latest | Newest release code |
 
 
 ## Parameters
