@@ -181,9 +181,9 @@ DownloadTrailers () {
 		radarrid="${radarrmovieids[$id]}"
 		radarrmoviedata="$(echo "${radarrmovielist}" | jq -r ".[] | select(.id==$radarrid)")"
 		radarrmovietitle="$(echo "${radarrmoviedata}" | jq -r ".title")"
-		themoviedbmovieimdbid="$(echo "${radarrmoviedata}" | jq -r ".imdbId")"
+		themoviedbmovieimdbid="$(echo "${radarrmoviedata}" | jq -r ".tvdbId")"
 
-		themoviedbmovieidapicall=$(curl -s "https://api.themoviedb.org/3/find/${themoviedbmovieimdbid}?api_key=${themoviedbapikey}&language=en-US&external_source=imdb_id")
+		themoviedbmovieidapicall=$(curl -s "https://api.themoviedb.org/3/find/${themoviedbmovieimdbid}?api_key=${themoviedbapikey}&language=en-US&external_source=tvdb_id")
 		themoviedbmovieid=($(echo "$themoviedbmovieidapicall" | jq -r ".tv_results[0] | .id"))
 		
 		if [ -f "/config/cache/${themoviedbmovieid}-complete" ]; then
