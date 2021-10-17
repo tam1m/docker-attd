@@ -1,4 +1,4 @@
-# AMTD - Automated TV Show Trailer Downloader 
+# ATTD - Automated TV Show Trailer Downloader 
 [![Docker Build](https://img.shields.io/docker/cloud/automated/huteri/attd?style=flat-square)](https://hub.docker.com/r/huteri/attd)
 [![Docker Pulls](https://img.shields.io/docker/pulls/huteri/attd?style=flat-square)](https://hub.docker.com/r/huteri/attd)
 [![Docker Stars](https://img.shields.io/docker/stars/huteri/attd?style=flat-square)](https://hub.docker.com/r/huteri/attd)
@@ -8,7 +8,7 @@ Modified version of RandomNinjaAtk/docker-amtd to make it work with sonarr. Test
 
 ## Features
 * Downloading **TV Shows Trailers** and **Extras** using online sources for use in popular applications (Plex/Kodi/Emby/Jellyfin): 
-  * Connects to Sonarr to automatically download trailers for Movies in your existing library
+  * Connects to Sonarr to automatically download trailers for TV Series in your existing library
   * Downloads videos using youtube-dl automatically
   * Names videos correctly to match Plex/Emby naming convention (Emby not tested)
   * Embeds relevant metadata into each video
@@ -41,7 +41,7 @@ Container images are configured using parameters passed at runtime (such as thos
 | --- | --- |
 | `-e PUID=1000` | for UserID - see below for explanation |
 | `-e PGID=1000` | for GroupID - see below for explanation |
-| `-v /config` | Configuration files for AMTD. |
+| `-v /config` | Configuration files for ATTD. |
 | `-v /change/me/to/match/sonarr` | Configure this volume to match your Sonarr Sonarr's volume mappings associated with Sonarr's Library Root Folder settings |
 | `-e AUTOSTART=true` | true = Enabled :: Runs script automatically on startup |
 | `-e SCRIPTINTERVAL=1h` | #s or #m or #h or #d :: s = seconds, m = minutes, h = hours, d = days :: Amount of time between each script run, when AUTOSTART is enabled|
