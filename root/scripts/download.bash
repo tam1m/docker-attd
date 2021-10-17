@@ -26,44 +26,44 @@ Configuration () {
 		echo "$TITLESHORT Script Autostart: DISABLED"
 	fi
 	
-	#Verify Sonarr Connectivity using v0.2 and v3 API url
-	sonarrtestv02=$(curl -s "$SonarrUrl/api/system/status?apikey=${SonarrAPIkey}" | jq -r ".version")
-	sonarrtestv3=$(curl -s "$SonarrUrl/api/v3/system/status?apikey=${SonarrAPIkey}" | jq -r ".version")
-	if [ ! -z "$sonarrtestv02" ] || [ ! -z "$sonarrtestv3" ] ; then
-		if [ "$sonarrtestv02" != "null" ]; then
-			echo "Sonarr v0.2 API: Connection Valid, version: $sonarrtestv02"
-		elif [ "$sonarrtestv3" != "null" ]; then
-			echo "Sonarr v3 API: Connection Valid, version: $sonarrtestv3"
+	#Verify Radarr Connectivity using v0.2 and v3 API url
+	radarrtestv02=$(curl -s "$SonarrUrl/api/system/status?apikey=${SonarrAPIkey}" | jq -r ".version")
+	radarrtestv3=$(curl -s "$SonarrUrl/api/v3/system/status?apikey=${SonarrAPIkey}" | jq -r ".version")
+	if [ ! -z "$radarrtestv02" ] || [ ! -z "$radarrtestv3" ] ; then
+		if [ "$radarrtestv02" != "null" ]; then
+			echo "Radarr v0.2 API: Connection Valid, version: $radarrtestv02"
+		elif [ "$radarrtestv3" != "null" ]; then
+			echo "Radarr v3 API: Connection Valid, version: $radarrtestv3"
 		else
-			echo "ERROR: Cannot communicate with Sonarr, most likely a...."
+			echo "ERROR: Cannot communicate with Radarr, most likely a...."
 			echo "ERROR: Invalid API Key: $SonarrAPIkey"
 			error=1
 		fi
 	else
-		echo "ERROR: Cannot communicate with Sonarr, no response"
+		echo "ERROR: Cannot communicate with Radarr, no response"
 		echo "ERROR: URL: $SonarrUrl"
 		echo "ERROR: API Key: $SonarrAPIkey"
 		error=1
 	fi
 
-	sonarrmovielist=$(curl -s --header "X-Api-Key:"${SonarrAPIkey} --request GET  "$SonarrUrl/api/v3/series")
-	sonarrmovietotal=$(echo "${sonarrmovielist}"  | jq -r '.[] | select(.statistics.episodeFileCount>0) | .id' | wc -l)
-	sonarrmovieids=($(echo "${sonarrmovielist}" | jq -r '.[] | select(.statistics.episodeFileCount>0) | .id'))
+	radarrmovielist=$(curl -s --header "X-Api-Key:"${SonarrAPIkey} --request GET  "$SonarrUrl/api/v3/series")
+	radarrmovietotal=$(echo "${radarrmovielist}"  | jq -r '.[] | select(.statistics.episodeFileCount>0) | .id' | wc -l)
+	radarrmovieids=($(echo "${radarrmovielist}" | jq -r '.[] | select(.statistics.episodeFileCount>0) | .id'))
 	
-	echo "Sonarr: Verifying Movie Directory Access:"
-	for id in ${!sonarrmovieids[@]}; do
+	echo "Radarr: Verifying Movie Directory Access:"
+	for id in ${!radarrmovieids[@]}; do
 		currentprocessid=$(( $id + 1 ))
-		sonarrid="${sonarrmovieids[$id]}"
-		sonarrmoviedata="$(echo "${sonarrmovielist}" | jq -r ".[] | select(.id==$sonarrid)")"
-		sonarrmoviepath="$(echo "${sonarrmoviedata}" | jq -r ".path")"
-		sonarrmovierootpath="$(dirname "$sonarrmoviepath")"
-		if [ -d "$sonarrmovierootpath" ]; then
-			echo "Sonarr: Root Media Folder Found: $sonarrmovierootpath"
+		radarrid="${radarrmovieids[$id]}"
+		radarrmoviedata="$(echo "${radarrmovielist}" | jq -r ".[] | select(.id==$radarrid)")"
+		radarrmoviepath="$(echo "${radarrmoviedata}" | jq -r ".path")"
+		radarrmovierootpath="$(dirname "$radarrmoviepath")"
+		if [ -d "$radarrmovierootpath" ]; then
+			echo "Radarr: Root Media Folder Found: $radarrmovierootpath"
 			error=0
 			break
 		else
-			echo "ERROR: Sonarr Root Media Folder not found, please verify you have the right volume configured, expecting path:"
-			echo "ERROR: Expected volume path: $sonarrmovierootpath"
+			echo "ERROR: Radarr Root Media Folder not found, please verify you have the right volume configured, expecting path:"
+			echo "ERROR: Expected volume path: $radarrmovierootpath"
 			error=1
 			break
 		fi
@@ -81,27 +81,27 @@ Configuration () {
 
 	# extrastype
 	if [ ! -z "$extrastype" ]; then
-		echo "Sonarr Extras Selection: $extrastype"
+		echo "Radarr Extras Selection: $extrastype"
 	else
-		echo "WARNING: Sonarr Extras Selection not specified"
-		echo "Sonarr Extras Selection: trailers"
+		echo "WARNING: Radarr Extras Selection not specified"
+		echo "Radarr Extras Selection: trailers"
 		extrastype="trailers"
 	fi
 	
 	# LANGUAGES
 	if [ ! -z "$LANGUAGES" ]; then
 		LANGUAGES="${LANGUAGES,,}"
-		echo "Sonarr Extras Audio Languages: $LANGUAGES (first one found is used)"
+		echo "Radarr Extras Audio Languages: $LANGUAGES (first one found is used)"
 	else
 		LANGUAGES="en"
-		echo "Sonarr Extras Audio Languages: $LANGUAGES (first one found is used)"
+		echo "Radarr Extras Audio Languages: $LANGUAGES (first one found is used)"
 	fi
 	
 	# videoformat
 	if [ ! -z "$videoformat" ]; then
-		echo "Sonarr Extras Format Set To: $videoformat"
+		echo "Radarr Extras Format Set To: $videoformat"
 	else
-		echo "Sonarr Extras Format Set To: --format bestvideo[vcodec*=avc1]+bestaudio"
+		echo "Radarr Extras Format Set To: --format bestvideo[vcodec*=avc1]+bestaudio"
 		videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"
 	fi
 	
@@ -109,50 +109,50 @@ Configuration () {
 	# subtitlelanguage
 	if [ ! -z "$subtitlelanguage" ]; then
 		subtitlelanguage="${subtitlelanguage,,}"
-		echo "Sonarr Extras Subtitle Language: $subtitlelanguage"
+		echo "Radarr Extras Subtitle Language: $subtitlelanguage"
 	else
 		subtitlelanguage="en"
-		echo "Sonarr Extras Subtitle Language: $subtitlelanguage"
+		echo "Radarr Extras Subtitle Language: $subtitlelanguage"
 	fi
 
 	if [ ! -z "$FilePermissions" ]; then
-		echo "Sonarr Extras File Permissions: $FilePermissions"
+		echo "Radarr Extras File Permissions: $FilePermissions"
 	else
 		echo "ERROR: FilePermissions not set, using default..."
 		FilePermissions="666"
-		echo "Sonarr Extras File Permissions: $FilePermissions"
+		echo "Radarr Extras File Permissions: $FilePermissions"
 	fi
 	
 	if [ ! -z "$FolderPermissions" ]; then
-		echo "Sonarr Extras Foldder Permissions: $FolderPermissions"
+		echo "Radarr Extras Foldder Permissions: $FolderPermissions"
 	else
 		echo "WARNING: FolderPermissions not set, using default..."
 		FolderPermissions="766"
-		echo "Sonarr Extras Foldder Permissions: $FolderPermissions"
+		echo "Radarr Extras Foldder Permissions: $FolderPermissions"
 	fi
 	
 	if [ ! -z "$SINGLETRAILER" ]; then
 		if [ "$SINGLETRAILER" == "true" ]; then
-			echo "Sonarr Single Trailer: ENABLED"
+			echo "Radarr Single Trailer: ENABLED"
 		else
-			echo "Sonarr Single Trailer: DISABLED"
+			echo "Radarr Single Trailer: DISABLED"
 		fi
 	else
 		echo "WARNING: SINGLETRAILER not set, using default..."
 		SINGLETRAILER="true"
-		echo "Sonarr Single Trailer: ENABLED"
+		echo "Radarr Single Trailer: ENABLED"
 	fi
 	
 	if [ ! -z "$USEFOLDERS" ]; then
 		if [ "$USEFOLDERS" == "true" ]; then
-			echo "Sonarr Use Extras Folders: ENABLED"
+			echo "Radarr Use Extras Folders: ENABLED"
 		else
-			echo "Sonarr Use Extras Folders: DISABLED"
+			echo "Radarr Use Extras Folders: DISABLED"
 		fi
 	else
 		echo "WARNING: USEFOLDERS not set, using default..."
 		USEFOLDERS="true"
-		echo "Sonarr Use Extras Folders: ENABLED"
+		echo "Radarr Use Extras Folders: ENABLED"
 	fi
 
 	if [ ! -z "$PREFER_EXISTING" ]; then
@@ -176,40 +176,40 @@ Configuration () {
 
 DownloadTrailers () {
 	echo "############################################ DOWNLOADING TRAILERS"
-	for id in ${!sonarrmovieids[@]}; do
+	for id in ${!radarrmovieids[@]}; do
 		currentprocessid=$(( $id + 1 ))
-		sonarrid="${sonarrmovieids[$id]}"
-		sonarrmoviedata="$(echo "${sonarrmovielist}" | jq -r ".[] | select(.id==$sonarrid)")"
-		sonarrmovietitle="$(echo "${sonarrmoviedata}" | jq -r ".title")"
-		themoviedbmovieimdbid="$(echo "${sonarrmoviedata}" | jq -r ".tvdbId")"
+		radarrid="${radarrmovieids[$id]}"
+		radarrmoviedata="$(echo "${radarrmovielist}" | jq -r ".[] | select(.id==$radarrid)")"
+		radarrmovietitle="$(echo "${radarrmoviedata}" | jq -r ".title")"
+		themoviedbmovieimdbid="$(echo "${radarrmoviedata}" | jq -r ".tvdbId")"
 
 		themoviedbmovieidapicall=$(curl -s "https://api.themoviedb.org/3/find/${themoviedbmovieimdbid}?api_key=${themoviedbapikey}&language=en-US&external_source=tvdb_id")
 		themoviedbmovieid=($(echo "$themoviedbmovieidapicall" | jq -r ".tv_results[0] | .id"))
 		
 		if [ -f "/config/cache/${themoviedbmovieid}-complete" ]; then
 			if [[ $(find "/config/cache/${themoviedbmovieid}-complete" -mtime +7 -print) ]]; then
-				echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: Checking for changes..."
+				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: Checking for changes..."
 				rm "/config/cache/${themoviedbmovieid}-complete"
 			else
-				echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: All videos already downloaded, skipping..."
+				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: All videos already downloaded, skipping..."
 				continue
 			fi
 		fi
-		sonarrmoviepath="$(echo "${sonarrmoviedata}" | jq -r ".path")"
-		if [ ! -d "$sonarrmoviepath" ]; then
-			echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: ERROR: Movie Path does not exist, Skipping..."
+		radarrmoviepath="$(echo "${radarrmoviedata}" | jq -r ".path")"
+		if [ ! -d "$radarrmoviepath" ]; then
+			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: ERROR: Movie Path does not exist, Skipping..."
 			continue
 		fi
-		sonarrmovieyear="$(echo "${sonarrmoviedata}" | jq -r ".year")"
-		sonarrmoviegenre="$(echo "${sonarrmoviedata}" | jq -r ".genres | .[]" | head -n 1)"
-		sonarrmoviefolder="$(basename "${sonarrmoviepath}")"
-		echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle"
+		radarrmovieyear="$(echo "${radarrmoviedata}" | jq -r ".year")"
+		radarrmoviegenre="$(echo "${radarrmoviedata}" | jq -r ".genres | .[]" | head -n 1)"
+		radarrmoviefolder="$(basename "${radarrmoviepath}")"
+		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle"
 		
 		
 		IFS=',' read -r -a filters <<< "$LANGUAGES"
 		for filter in "${filters[@]}"
 		do
-			echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: Searching for \"$filter\" extras..."
+			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: Searching for \"$filter\" extras..."
 			themoviedbvideoslistdata=$(curl -s "https://api.themoviedb.org/3/tv/${themoviedbmovieid}/videos?api_key=${themoviedbapikey}&language=$filter")
 			echo $themoviedbvideoslistdata
 
@@ -220,7 +220,7 @@ DownloadTrailers () {
 			fi
 			themoviedbvideoslistidscount=$(echo "$themoviedbvideoslistdata" | jq -r ".results[] |  select(.site==\"YouTube\" and .iso_639_1==\"$filter\") | .id" | wc -l)
 			if [ -z "$themoviedbvideoslistids" ]; then
-				echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: None found..."
+				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: None found..."
 				continue
 			else
 				break
@@ -228,20 +228,20 @@ DownloadTrailers () {
 		done
 		
 		if [ -z "$themoviedbvideoslistids" ]; then
-			echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: ERROR: No Extras in wanted languages found, Skipping..."
+			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: ERROR: No Extras in wanted languages found, Skipping..."
 			if [ -f "/config/logs/NotFound.log" ]; then
-				if cat "/config/logs/NotFound.log" | grep -i ":: $sonarrmovietitle ::" | read; then
+				if cat "/config/logs/NotFound.log" | grep -i ":: $radarrmovietitle ::" | read; then
 					sleep 0.1
 				else
-					echo "No Trailer Found :: $sonarrmovietitle :: themoviedb missing Youtube Trailer ID"  >> "/config/logs/NotFound.log"
+					echo "No Trailer Found :: $radarrmovietitle :: themoviedb missing Youtube Trailer ID"  >> "/config/logs/NotFound.log"
 				fi
 			else
-				echo "No Trailer Found :: $sonarrmovietitle :: themoviedb Missing Youtube Trailer ID"  >> "/config/logs/NotFound.log"
+				echo "No Trailer Found :: $radarrmovietitle :: themoviedb Missing Youtube Trailer ID"  >> "/config/logs/NotFound.log"
 			fi
 			continue
 		fi
 
-		echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: $themoviedbvideoslistidscount Extras Found!"
+		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $themoviedbvideoslistidscount Extras Found!"
 
 		for id in ${!themoviedbvideoslistids[@]}; do
 
@@ -286,13 +286,13 @@ DownloadTrailers () {
 				folder="Other"
 			fi				
 			
-			echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename"
+			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename"
 			
 			if [ "$USEFOLDERS" == "true" ]; then
 				if [ "$SINGLETRAILER" == "true" ]; then
 					if [ "$themoviedbvidetype" == "Trailer" ]; then
-						if find "$sonarrmoviepath/$folder" -name "*.mkv" | read; then
-							echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Existing Trailer found, skipping..."
+						if find "$radarrmoviepath/$folder" -name "*.mkv" | read; then
+							echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Existing Trailer found, skipping..."
 							continue
 						fi
 					fi
@@ -300,26 +300,26 @@ DownloadTrailers () {
 				if [ "$PREFER_EXISTING" == "true" ]; then
 					# Check for existing manual trailer
 					if [ "$themoviedbvidetype" == "Trailer" ]; then
-						if find "$sonarrmoviepath/$folder" -name "*.*" | read; then
-							echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Existing Manual Trailer found, skipping..."
+						if find "$radarrmoviepath/$folder" -name "*.*" | read; then
+							echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Existing Manual Trailer found, skipping..."
 							continue
 						fi
 					fi
 				fi
-				outputfile="$sonarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv"
+				outputfile="$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv"
 			else
-				if [[ -d "$sonarrmoviepath/${folder}s" || -d "$sonarrmoviepath/${folder}" ]]; then
+				if [[ -d "$radarrmoviepath/${folder}s" || -d "$radarrmoviepath/${folder}" ]]; then
 					if [ "$themoviedbvidetype" == "Behind the Scenes" ]; then
-						rm -rf "$sonarrmoviepath/${folder}"
+						rm -rf "$radarrmoviepath/${folder}"
 					else
-						rm -rf "$sonarrmoviepath/${folder}s"
+						rm -rf "$radarrmoviepath/${folder}s"
 					fi
 				fi
 				folder="$(echo "${folder,,}" | sed 's/ *//g')"
 				if [ "$SINGLETRAILER" == "true" ]; then
 					if [ "$themoviedbvidetype" == "Trailer" ]; then
-						if find "$sonarrmoviepath" -name "*-trailer.mkv" | read; then
-							echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Existing Trailer found, skipping..."
+						if find "$radarrmoviepath" -name "*-trailer.mkv" | read; then
+							echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Existing Trailer found, skipping..."
 							continue
 						fi
 					fi
@@ -328,17 +328,17 @@ DownloadTrailers () {
 				if [ "$PREFER_EXISTING" == "true" ]; then
 					if [ "$themoviedbvidetype" == "Trailer" ]; then
 						# Check for existing manual trailer
-						if find "$sonarrmoviepath" -name "*-trailer.*" | read; then
-							echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Existing Manual Trailer found, skipping..."
+						if find "$radarrmoviepath" -name "*-trailer.*" | read; then
+							echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Existing Manual Trailer found, skipping..."
 							continue
 						fi
 					fi
 				fi
-				outputfile="$sonarrmoviepath/$sanatizethemoviedbvidename-$folder.mkv"
+				outputfile="$radarrmoviepath/$sanatizethemoviedbvidename-$folder.mkv"
 			fi			
 			
 			if [ -f "$outputfile" ]; then
-				echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Trailer already Downloaded..."
+				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Trailer already Downloaded..."
 				continue
 			fi
 			
@@ -350,7 +350,7 @@ DownloadTrailers () {
 			fi
 			tempfile="/config/temp/download"
 
-			echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Sending Trailer link to youtube-dl..."
+			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Sending Trailer link to youtube-dl..."
 			echo "=======================START YOUTUBE-DL========================="
 			youtube-dl ${cookies} -o "$tempfile" ${videoformat} --write-sub --sub-lang $subtitlelanguage --embed-subs --merge-output-format mkv --no-mtime --geo-bypass "$youtubeurl"
 			echo "========================STOP YOUTUBE-DL========================="
@@ -381,8 +381,8 @@ DownloadTrailers () {
 					audiodescription="Mono"
 				fi
 
-				echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER DOWNLOAD :: Complete!"
-				echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER :: Extracting thumbnail with ffmpeg..."
+				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER DOWNLOAD :: Complete!"
+				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER :: Extracting thumbnail with ffmpeg..."
 				echo "========================START FFMPEG========================"
 				ffmpeg -y \
 					-ss 10 \
@@ -391,19 +391,19 @@ DownloadTrailers () {
 					-vf "scale=640:-2" \
 					"/config/temp/cover.jpg"
 				echo "========================STOP FFMPEG========================="
-				echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Updating File Statistics via mkvtoolnix (mkvpropedit)..."
+				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Updating File Statistics via mkvtoolnix (mkvpropedit)..."
 				echo "========================START MKVPROPEDIT========================"
 				mkvpropedit "$tempfile.mkv" --add-track-statistics-tags
 				echo "========================STOP MKVPROPEDIT========================="
-				echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER :: Embedding metadata with ffmpeg..."
+				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER :: Embedding metadata with ffmpeg..."
 				echo "========================START FFMPEG========================"
 				mv "$tempfile.mkv" "$tempfile-temp.mkv"
 				ffmpeg -y \
 					-i "$tempfile-temp.mkv" \
 					-c copy \
 					-metadata TITLE="${themoviedbvidename}" \
-					-metadata DATE_RELEASE="$sonarrmovieyear" \
-					-metadata GENRE="$sonarrmoviegenre" \
+					-metadata DATE_RELEASE="$radarrmovieyear" \
+					-metadata GENRE="$radarrmoviegenre" \
 					-metadata ENCODED_BY="AMTD" \
 					-metadata CONTENT_TYPE="Movie $folder" \
 					-metadata:s:v:0 title="$qualitydescription" \
@@ -412,12 +412,12 @@ DownloadTrailers () {
 					"$tempfile.mkv"
 				echo "========================STOP FFMPEG========================="
 				if [ -f "$tempfile.mkv" ]; then
-					echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER :: Metadata Embedding Complete!"
+					echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER :: Metadata Embedding Complete!"
 					if [ -f "$tempfile-temp.mkv" ]; then
 						rm "$tempfile-temp.mkv"
 					fi
 				else
-					echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER :: ERROR: Metadata Embedding Failed!"
+					echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER :: ERROR: Metadata Embedding Failed!"
 					mv "$tempfile-temp.mkv" "$tempfile.mkv"
 				fi
 				
@@ -427,21 +427,21 @@ DownloadTrailers () {
 						chmod $FilePermissions "$outputfile"
 						chown abc:abc "$outputfile"
 					else
-						if [ ! -d "$sonarrmoviepath/$folder" ]; then
-							mkdir -p "$sonarrmoviepath/$folder"
-							chmod $FolderPermissions "$sonarrmoviepath/$folder"
-							chown abc:abc "$sonarrmoviepath/$folder"
+						if [ ! -d "$radarrmoviepath/$folder" ]; then
+							mkdir -p "$radarrmoviepath/$folder"
+							chmod $FolderPermissions "$radarrmoviepath/$folder"
+							chown abc:abc "$radarrmoviepath/$folder"
 						fi
-						if [ -d "$sonarrmoviepath/$folder" ]; then
+						if [ -d "$radarrmoviepath/$folder" ]; then
 							mv "$tempfile.mkv" "$outputfile"
 							chmod $FilePermissions "$outputfile"
 							chown abc:abc "$outputfile"
 						fi
 					fi
 				fi
-				echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Complete!"
+				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Complete!"
 			else
-				echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER DOWNLOAD :: ERROR :: Skipping..."
+				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER DOWNLOAD :: ERROR :: Skipping..."
 			fi
 			
 			if [ -d "/config/temp" ]; then
@@ -449,21 +449,21 @@ DownloadTrailers () {
 			fi
 		done
 		if [ "$USEFOLDERS" == "true" ]; then
-			trailercount="$(find "$sonarrmoviepath" -mindepth 2 -type f -iname "*.mkv" | wc -l)"
+			trailercount="$(find "$radarrmoviepath" -mindepth 2 -type f -iname "*.mkv" | wc -l)"
 		else
-			trailercount="$(find "$sonarrmoviepath" -mindepth 1 -type f -regex '.*\(-trailer.mkv\|-scene.mkv\|-short.mkv\|-featurette.mkv\|-other.mkv\|-behindthescenes.mkv\)' | wc -l)"
+			trailercount="$(find "$radarrmoviepath" -mindepth 1 -type f -regex '.*\(-trailer.mkv\|-scene.mkv\|-short.mkv\|-featurette.mkv\|-other.mkv\|-behindthescenes.mkv\)' | wc -l)"
 		fi
 		
-		echo "$currentprocessid of $sonarrmovietotal :: $sonarrmovietitle :: $trailercount Extras Downloaded!"
+		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $trailercount Extras Downloaded!"
 		if [ "$trailercount" -ne "0" ]; then
 			touch "/config/cache/${themoviedbmovieid}-complete"
 		fi
 
 	done
 	if [ "$USEFOLDERS" == "true" ]; then
-		trailercount="$(find "$sonarrmovierootpath" -mindepth 3 -type f -iname "*.mkv" | wc -l)"
+		trailercount="$(find "$radarrmovierootpath" -mindepth 3 -type f -iname "*.mkv" | wc -l)"
 	else
-		trailercount="$(find "$sonarrmovierootpath" -mindepth 2 -type f -regex '.*\(-trailer.mkv\|-scene.mkv\|-short.mkv\|-featurette.mkv\|-other.mkv\|-behindthescenes.mkv\)' | wc -l)"
+		trailercount="$(find "$radarrmovierootpath" -mindepth 2 -type f -regex '.*\(-trailer.mkv\|-scene.mkv\|-short.mkv\|-featurette.mkv\|-other.mkv\|-behindthescenes.mkv\)' | wc -l)"
 	fi
 	echo "############################################ $trailercount TRAILERS DOWNLOADED"
 	echo "############################################ SCRIPT COMPLETE"
