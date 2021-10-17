@@ -4,13 +4,11 @@
 [![Docker Stars](https://img.shields.io/docker/stars/huteri/attd?style=flat-square)](https://hub.docker.com/r/huteri/attd)
 [![Docker Hub](https://img.shields.io/badge/Open%20On-DockerHub-blue?style=flat-square)](https://hub.docker.com/r/huteri/attd)
 
-Sonarr adaptation of RandomNinjatAtk/amtd to automatically download trailers for tv shows. Tested only with plex
-
-
+Modified version of AMTD to make it work with sonarr. Tested only on plex.
 
 ## Features
 * Downloading **TV Shows Trailers** and **Extras** using online sources for use in popular applications (Plex/Kodi/Emby/Jellyfin): 
-  * Connects to Radarr to automatically download trailers for Movies in your existing library
+  * Connects to Sonarr to automatically download trailers for Movies in your existing library
   * Downloads videos using youtube-dl automatically
   * Names videos correctly to match Plex/Emby naming convention (Emby not tested)
   * Embeds relevant metadata into each video
@@ -44,16 +42,16 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e PUID=1000` | for UserID - see below for explanation |
 | `-e PGID=1000` | for GroupID - see below for explanation |
 | `-v /config` | Configuration files for AMTD. |
-| `-v /change/me/to/match/radarr` | Configure this volume to match your Radarr Radarr's volume mappings associated with Radarr's Library Root Folder settings |
+| `-v /change/me/to/match/sonarr` | Configure this volume to match your Sonarr Sonarr's volume mappings associated with Sonarr's Library Root Folder settings |
 | `-e AUTOSTART=true` | true = Enabled :: Runs script automatically on startup |
 | `-e SCRIPTINTERVAL=1h` | #s or #m or #h or #d :: s = seconds, m = minutes, h = hours, d = days :: Amount of time between each script run, when AUTOSTART is enabled|
-| `-e RadarrUrl=http://x.x.x.x:7878` | Set domain or IP to your Radarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s. |
-| `-e RadarrAPIkey=08d108d108d108d108d108d108d108d1` | Radarr API key. |
+| `-e SonarrUrl=http://x.x.x.x:8989` | Set domain or IP to your Sonarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s. |
+| `-e SonarrAPIkey=08d108d108d108d108d108d108d108d1` | Sonarr API key. |
 | `-e extrastype=all` | all or trailers :: all downloads all available videos (trailers, clips, featurette, etc...) :: trailers only downloads trailers |
 | `-e LANGUAGES=en,de` | Set the primary desired language, if not found, fallback to next langauge in the list... (this is a "," separated list of ISO 639-1 language codes) |
 | `-e videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"` | For guidence, please see youtube-dl documentation |
 | `-e subtitlelanguage=en` | Desired Language Code :: For guidence, please see youtube-dl documentation. |
-| `-e USEFOLDERS=false` | true = enabled :: Creates subfolders within the movie folder for extras |
+| `-e USEFOLDERS=true` | true = enabled :: Creates subfolders within the movie folder for extras | DEFAULT is true
 
 | `-e PREFER_EXISTING=false` | true = enabled :: Checks for existing "trailer" file, and skips it if found |
 | `-e SINGLETRAILER=true` | true = enabled :: Only downloads the first available trailer, does not apply to other extras type |
@@ -66,7 +64,7 @@ Container images are configured using parameters passed at runtime (such as thos
 docker create \
   --name=attd \
   -v /path/to/config/files:/config \
-  -v /change/me/to/match/radarr:/change/me/to/match/radarr \
+  -v /change/me/to/match/sonarr:/change/me/to/match/sonarr \
   -e PUID=1000 \
   -e PGID=1000 \
   -e AUTOSTART=true \
@@ -80,8 +78,8 @@ docker create \
   -e SINGLETRAILER=true \
   -e FilePermissions=644 \
   -e FolderPermissions=755 \
-  -e RadarrUrl=http://x.x.x.x:7878 \
-  -e RadarrAPIkey=RADARRAPIKEY \
+  -e SonarrUrl=http://x.x.x.x:8989 \
+  -e SonarrAPIkey=SONARRAPIKEY \
   --restart unless-stopped \
   huteri/attd 
 ```
@@ -96,10 +94,10 @@ version: "2.1"
 services:
   amd:
     image: huteri/attd
-    container_name: amtd
+    container_name: attd
     volumes:
       - /path/to/config/files:/config
-      - /change/me/to/match/radarr:/change/me/to/match/radarr
+      - /change/me/to/match/sonarr:/change/me/to/match/sonarr
     environment:
       - PUID=1000
       - PGID=1000
@@ -114,8 +112,8 @@ services:
       - PREFER_EXISTING=false
       - FilePermissions=644
       - FolderPermissions=755
-      - RadarrUrl=http://x.x.x.x:7878
-      - RadarrAPIkey=RADARRAPIKEY
+      - SonarrUrl=http://x.x.x.x:8989
+      - SonarrAPIkey=SONARRAPIKEY
     restart: unless-stopped
 ```
 
@@ -143,6 +141,6 @@ services:
 # Credits
 - [ffmpeg](https://ffmpeg.org/)
 - [youtube-dl](https://ytdl-org.github.io/youtube-dl/index.html)
-- [Radarr](https://radarr.video/)
+- [Sonarr](https://sonarr.video/)
 - [The Movie Database](https://www.themoviedb.org/)
 - Icons made by <a href="http://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
