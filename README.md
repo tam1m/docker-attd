@@ -1,17 +1,17 @@
-# AMTD - Automated Movie Trailer Downloader 
-[![Docker Build](https://img.shields.io/docker/cloud/automated/randomninjaatk/amtd?style=flat-square)](https://hub.docker.com/r/randomninjaatk/amtd)
-[![Docker Pulls](https://img.shields.io/docker/pulls/randomninjaatk/amtd?style=flat-square)](https://hub.docker.com/r/randomninjaatk/amtd)
-[![Docker Stars](https://img.shields.io/docker/stars/randomninjaatk/amtd?style=flat-square)](https://hub.docker.com/r/randomninjaatk/amtd)
-[![Docker Hub](https://img.shields.io/badge/Open%20On-DockerHub-blue?style=flat-square)](https://hub.docker.com/r/randomninjaatk/amtd)
-[![Discord](https://img.shields.io/discord/747100476775858276.svg?style=flat-square&label=Discord&logo=discord)](https://discord.gg/JumQXDc "realtime support / chat with the community." )
+# AMTD - Automated TV Show Trailer Downloader 
+[![Docker Build](https://img.shields.io/docker/cloud/automated/randomninjaatk/amtd?style=flat-square)](https://hub.docker.com/r/huteri/attd)
+[![Docker Pulls](https://img.shields.io/docker/pulls/randomninjaatk/amtd?style=flat-square)](https://hub.docker.com/r/huteri/attd)
+[![Docker Stars](https://img.shields.io/docker/stars/randomninjaatk/amtd?style=flat-square)](https://hub.docker.com/r/huteri/attd)
+[![Docker Hub](https://img.shields.io/badge/Open%20On-DockerHub-blue?style=flat-square)](https://hub.docker.com/r/huteri/attd)
 
-[RandomNinjaAtk/amtd](https://github.com/RandomNinjaAtk/docker-amtd) is a Radarr companion script to automatically download movie trailers and extras for use in other video applications (plex/kodi/jellyfin/emby) 
+Sonarr adaptation of RandomNinjatAtk/amtd to automatically download trailers for tv shows. Tested only with plex
+
 
 [![RandomNinjaAtk/amtd](https://raw.githubusercontent.com/RandomNinjaAtk/unraid-templates/master/randomninjaatk/img/amtd.png)](https://github.com/RandomNinjaAtk/docker-amtd)
 
 
 ## Features
-* Downloading **Movie Trailers** and **Extras** using online sources for use in popular applications (Plex/Kodi/Emby/Jellyfin): 
+* Downloading **TV Shows Trailers** and **Extras** using online sources for use in popular applications (Plex/Kodi/Emby/Jellyfin): 
   * Connects to Radarr to automatically download trailers for Movies in your existing library
   * Downloads videos using youtube-dl automatically
   * Names videos correctly to match Plex/Emby naming convention (Emby not tested)
@@ -56,6 +56,7 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"` | For guidence, please see youtube-dl documentation |
 | `-e subtitlelanguage=en` | Desired Language Code :: For guidence, please see youtube-dl documentation. |
 | `-e USEFOLDERS=false` | true = enabled :: Creates subfolders within the movie folder for extras |
+
 | `-e PREFER_EXISTING=false` | true = enabled :: Checks for existing "trailer" file, and skips it if found |
 | `-e SINGLETRAILER=true` | true = enabled :: Only downloads the first available trailer, does not apply to other extras type |
 | `-e FilePermissions=644` | Based on chmod linux permissions |

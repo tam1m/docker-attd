@@ -1,5 +1,4 @@
 #!/usr/bin/with-contenv bash
-
 Configuration () {
 	processstartid="$(ps -A -o pid,cmd|grep "start.bash" | grep -v grep | head -n 1 | awk '{print $1}')"
 	processdownloadid="$(ps -A -o pid,cmd|grep "download.bash" | grep -v grep | head -n 1 | awk '{print $1}')"
@@ -47,9 +46,9 @@ Configuration () {
 		error=1
 	fi
 
-	radarrmovielist=$(curl -s --header "X-Api-Key:"${RadarrAPIkey} --request GET  "$RadarrUrl/api/v3/movie")
-	radarrmovietotal=$(echo "${radarrmovielist}"  | jq -r '.[] | select(.hasFile==true) | .id' | wc -l)
-	radarrmovieids=($(echo "${radarrmovielist}" | jq -r '.[] | select(.hasFile==true) | .id'))
+	radarrmovielist=$(curl -s --header "X-Api-Key:"${RadarrAPIkey} --request GET  "$RadarrUrl/api/v3/series")
+	radarrmovietotal=$(echo "${radarrmovielist}"  | jq -r '.[] | select(.statistics.episodeFileCount>0) | .id' | wc -l)
+	radarrmovieids=($(echo "${radarrmovielist}" | jq -r '.[] | select(.statistics.episodeFileCount>0) | .id'))
 	
 	echo "Radarr: Verifying Movie Directory Access:"
 	for id in ${!radarrmovieids[@]}; do
@@ -152,8 +151,8 @@ Configuration () {
 		fi
 	else
 		echo "WARNING: USEFOLDERS not set, using default..."
-		USEFOLDERS="false"
-		echo "Radarr Use Extras Folders: DISABLED"
+		USEFOLDERS="true"
+		echo "Radarr Use Extras Folders: ENABLED"
 	fi
 
 	if [ ! -z "$PREFER_EXISTING" ]; then
@@ -182,7 +181,11 @@ DownloadTrailers () {
 		radarrid="${radarrmovieids[$id]}"
 		radarrmoviedata="$(echo "${radarrmovielist}" | jq -r ".[] | select(.id==$radarrid)")"
 		radarrmovietitle="$(echo "${radarrmoviedata}" | jq -r ".title")"
-		themoviedbmovieid="$(echo "${radarrmoviedata}" | jq -r ".tmdbId")"
+		themoviedbmovieimdbid="$(echo "${radarrmoviedata}" | jq -r ".imdbId")"
+
+		themoviedbmovieidapicall=$(curl -s "https://api.themoviedb.org/3/find/${themoviedbmovieimdbid}?api_key=${themoviedbapikey}&language=en-US&external_source=imdb_id")
+		themoviedbmovieid=($(echo "$themoviedbmovieidapicall" | jq -r ".tv_results[0] | .id"))
+		
 		if [ -f "/config/cache/${themoviedbmovieid}-complete" ]; then
 			if [[ $(find "/config/cache/${themoviedbmovieid}-complete" -mtime +7 -print) ]]; then
 				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: Checking for changes..."
@@ -200,7 +203,6 @@ DownloadTrailers () {
 		radarrmovieyear="$(echo "${radarrmoviedata}" | jq -r ".year")"
 		radarrmoviegenre="$(echo "${radarrmoviedata}" | jq -r ".genres | .[]" | head -n 1)"
 		radarrmoviefolder="$(basename "${radarrmoviepath}")"
-		radarrmovieostudio="$(echo "${radarrmoviedata}" | jq -r ".studio")"		
 		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle"
 		
 		
@@ -208,7 +210,9 @@ DownloadTrailers () {
 		for filter in "${filters[@]}"
 		do
 			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: Searching for \"$filter\" extras..."
-			themoviedbvideoslistdata=$(curl -s "https://api.themoviedb.org/3/movie/${themoviedbmovieid}/videos?api_key=${themoviedbapikey}&language=$filter")
+			themoviedbvideoslistdata=$(curl -s "https://api.themoviedb.org/3/tv/${themoviedbmovieid}/videos?api_key=${themoviedbapikey}&language=$filter")
+			echo $themoviedbvideoslistdata
+
 			if [ "$extrastype" == "all" ]; then
 				themoviedbvideoslistids=($(echo "$themoviedbvideoslistdata" | jq -r ".results[] |  select(.site==\"YouTube\" and .iso_639_1==\"$filter\") | .id"))
 			else
@@ -238,7 +242,9 @@ DownloadTrailers () {
 		fi
 
 		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $themoviedbvideoslistidscount Extras Found!"
+
 		for id in ${!themoviedbvideoslistids[@]}; do
+
 			currentsubprocessid=$(( $id + 1 ))
 			themoviedbvideoid="${themoviedbvideoslistids[$id]}"
 			themoviedbvideodata="$(echo "$themoviedbvideoslistdata" | jq -r ".results[] | select(.id==\"$themoviedbvideoid\") | .")"
@@ -398,7 +404,6 @@ DownloadTrailers () {
 					-metadata TITLE="${themoviedbvidename}" \
 					-metadata DATE_RELEASE="$radarrmovieyear" \
 					-metadata GENRE="$radarrmoviegenre" \
-					-metadata COPYRIGHT="$radarrmovieostudio" \
 					-metadata ENCODED_BY="AMTD" \
 					-metadata CONTENT_TYPE="Movie $folder" \
 					-metadata:s:v:0 title="$qualitydescription" \
@@ -453,6 +458,7 @@ DownloadTrailers () {
 		if [ "$trailercount" -ne "0" ]; then
 			touch "/config/cache/${themoviedbmovieid}-complete"
 		fi
+
 	done
 	if [ "$USEFOLDERS" == "true" ]; then
 		trailercount="$(find "$radarrmovierootpath" -mindepth 3 -type f -iname "*.mkv" | wc -l)"
