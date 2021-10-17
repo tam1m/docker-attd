@@ -404,8 +404,8 @@ DownloadTrailers () {
 					-metadata TITLE="${themoviedbvidename}" \
 					-metadata DATE_RELEASE="$radarrmovieyear" \
 					-metadata GENRE="$radarrmoviegenre" \
-					-metadata ENCODED_BY="AMTD" \
-					-metadata CONTENT_TYPE="Movie $folder" \
+					-metadata ENCODED_BY="ATTD" \
+					-metadata CONTENT_TYPE="TV $folder" \
 					-metadata:s:v:0 title="$qualitydescription" \
 					-metadata:s:a:0 title="$audiodescription" \
 					-attach "/config/temp/cover.jpg" -metadata:s:t mimetype=image/jpeg \
