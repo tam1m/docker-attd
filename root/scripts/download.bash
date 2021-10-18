@@ -167,6 +167,18 @@ Configuration () {
 		echo "Prefer Existing Trailer: DISABLED"
 	fi
 
+	if [ ! -z "$PUT_LAST_SEASON_FOLDER" ]; then
+		if [ "$PUT_LAST_SEASON_FOLDER" == "true" ]; then
+			echo "Put Extras in Last Season Folder: ENABLED"
+		else
+			echo "Put Extras in Last Season Folder: DISABLED"
+		fi
+	else
+		echo "WARNING: PUT_LAST_SEASON_FOLDER not set, using default..."
+		PUT_LAST_SEASON_FOLDER="false"
+		echo "Put Extras in last Season Folder: DISABLED"
+	fi
+
 	if [ $error == 1 ]; then
 		echo "ERROR :: Exiting..."
 		exit 1
@@ -176,16 +188,19 @@ Configuration () {
 
 DownloadTrailers () {
 	echo "############################################ DOWNLOADING TRAILERS"
+
 	for id in ${!radarrmovieids[@]}; do
+
 		currentprocessid=$(( $id + 1 ))
 		radarrid="${radarrmovieids[$id]}"
+		
 		radarrmoviedata="$(echo "${radarrmovielist}" | jq -r ".[] | select(.id==$radarrid)")"
 		radarrmovietitle="$(echo "${radarrmoviedata}" | jq -r ".title")"
 		themoviedbmovieimdbid="$(echo "${radarrmoviedata}" | jq -r ".tvdbId")"
-
 		themoviedbmovieidapicall=$(curl -s "https://api.themoviedb.org/3/find/${themoviedbmovieimdbid}?api_key=${themoviedbapikey}&language=en-US&external_source=tvdb_id")
 		themoviedbmovieid=($(echo "$themoviedbmovieidapicall" | jq -r ".tv_results[0] | .id"))
-		
+	
+
 		if [ -f "/config/cache/${themoviedbmovieid}-complete" ]; then
 			if [[ $(find "/config/cache/${themoviedbmovieid}-complete" -mtime +7 -print) ]]; then
 				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: Checking for changes..."
@@ -195,7 +210,20 @@ DownloadTrailers () {
 				continue
 			fi
 		fi
+
 		radarrmoviepath="$(echo "${radarrmoviedata}" | jq -r ".path")"
+
+		if [ "$PUT_LAST_SEASON_FOLDER" == "true" ]; then
+
+			seasonFolderNumber=($(echo "$radarrmoviedata" | jq -r ".seasons[-1] | .seasonNumber"))
+			while [[ ${#seasonFolderNumber} -lt 2 ]] ; do
+   				seasonFolderNumber="0${seasonFolderNumber}"
+			done
+
+			seasonFolderName="Season $seasonFolderNumber"
+			radarrmoviepath="$radarrmoviepath/$seasonFolderName"
+		fi
+
 		if [ ! -d "$radarrmoviepath" ]; then
 			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: ERROR: Movie Path does not exist, Skipping..."
 			continue

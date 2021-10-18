@@ -52,6 +52,8 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"` | For guidence, please see youtube-dl documentation |
 | `-e subtitlelanguage=en` | Desired Language Code :: For guidence, please see youtube-dl documentation. |
 | `-e USEFOLDERS=true` | true = enabled :: Creates subfolders within the movie folder for extras | DEFAULT is true
+| `-e PUT_LAST_SEASON_FOLDER=false` | true = enabled :: Put extras in last season folder (only `Season {season:00}` format) | DEFAULT is false | extras on season level only supported on android/ios clients
+
 
 | `-e PREFER_EXISTING=false` | true = enabled :: Checks for existing "trailer" file, and skips it if found |
 | `-e SINGLETRAILER=true` | true = enabled :: Only downloads the first available trailer, does not apply to other extras type |
