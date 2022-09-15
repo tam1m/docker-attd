@@ -232,7 +232,7 @@ DownloadTrailers () {
    				seasonFolderNumber="0${seasonFolderNumber}"
 			done
 
-			seasonFolderName="Season $seasonFolderNumber"
+			seasonFolderName="S$seasonFolderNumber"
 			radarrmoviepath="$radarrmoviepath/$seasonFolderName"
 		fi
 
