@@ -9,7 +9,7 @@ Modified version of RandomNinjaAtk/docker-amtd to make it work with sonarr. Test
 ## Features
 * Downloading **TV Shows Trailers** and **Extras** using online sources for use in popular applications (Plex/Kodi/Emby/Jellyfin): 
   * Connects to Sonarr to automatically download trailers for TV Series in your existing library
-  * Downloads videos using youtube-dl automatically
+  * Downloads videos using yt-dlp automatically
   * Names videos correctly to match Plex/Emby naming convention (Emby not tested)
   * Embeds relevant metadata into each video
   
@@ -49,8 +49,8 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e SonarrAPIkey=08d108d108d108d108d108d108d108d1` | Sonarr API key. |
 | `-e extrastype=all` | all or trailers :: all downloads all available videos (trailers, clips, featurette, etc...) :: trailers only downloads trailers |
 | `-e LANGUAGES=en,de` | Set the primary desired language, if not found, fallback to next langauge in the list... (this is a "," separated list of ISO 639-1 language codes) |
-| `-e videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"` | For guidence, please see youtube-dl documentation |
-| `-e subtitlelanguage=en` | Desired Language Code :: For guidence, please see youtube-dl documentation. |
+| `-e videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"` | For guidence, please see yt-dlp documentation |
+| `-e subtitlelanguage=en` | Desired Language Code :: For guidence, please see yt-dlp documentation. |
 | `-e USEFOLDERS=true` | true = enabled :: Creates subfolders within the movie folder for extras | DEFAULT is true
 | `-e PUT_LAST_SEASON_FOLDER=false` | true = enabled :: Put extras in last season folder (only `Season {season:00}` format) | DEFAULT is false | extras on season level only supported on android/ios clients
 
@@ -132,7 +132,7 @@ services:
 * <strong>/config/cache</strong>
   * Contains the artist data cache to speed up processes
 * <strong>/config/coookies</strong>
-  * Store your cookies.txt file in this location, may be required for youtube-dl to work properly
+  * Store your cookies.txt file in this location, may be required for yt-dlp to work properly
   
   
 <br />
@@ -142,7 +142,7 @@ services:
  
 # Credits
 - [ffmpeg](https://ffmpeg.org/)
-- [youtube-dl](https://ytdl-org.github.io/youtube-dl/index.html)
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp)
 - [Sonarr](https://sonarr.video/)
 - [The Movie Database](https://www.themoviedb.org/)
 - Icons made by <a href="http://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>

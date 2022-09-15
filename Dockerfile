@@ -11,20 +11,20 @@ RUN \
 	apt-get update -y && \
 	apt-get upgrade -y && \
 	apt-get install -y --no-install-recommends \
-		curl \
-		jq \
-		python3 \
-		python3-pip \
-		ffmpeg \
-		mkvtoolnix && \
+	curl \
+	jq \
+	python3 \
+	python3-pip \
+	ffmpeg \
+	mkvtoolnix && \
 	rm -rf \
-		/tmp/* \
-		/var/lib/apt/lists/* \
-		/var/tmp/* && \
+	/tmp/* \
+	/var/lib/apt/lists/* \
+	/var/tmp/* && \
 	echo "************ install python packages ************" && \
 	python3 -m pip install --no-cache-dir -U \
-		mutagen \
-		youtube_dl
+	mutagen \
+	yt-dlp
 
 # copy local files
 COPY root/ /

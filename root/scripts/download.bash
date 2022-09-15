@@ -9,7 +9,7 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.2.5"
+	echo "############################################ SCRIPT VERSION 1.2.6"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -69,12 +69,12 @@ Configuration () {
 		fi
 	done
 
-	echo "youtube-dl: Checking for cookies.txt"
+	echo "yt-dlp: Checking for cookies.txt"
 	if [ -f "/config/cookies/cookies.txt" ]; then
-		echo "youtube-dl: /config/cookies/cookies.txt found!"
+		echo "yt-dlp: /config/cookies/cookies.txt found!"
 		cookies="--cookies /config/cookies/cookies.txt"
 	else
-		echo "WARNING: youtube-dl cookies.txt not found at the following location: /config/cookies/cookies.txt"
+		echo "WARNING: yt-dlp cookies.txt not found at the following location: /config/cookies/cookies.txt"
 		echo "WARNING: not having cookies may result in failed downloads..."
 		cookies=""
 	fi
@@ -378,10 +378,10 @@ DownloadTrailers () {
 			fi
 			tempfile="/config/temp/download"
 
-			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Sending Trailer link to youtube-dl..."
-			echo "=======================START YOUTUBE-DL========================="
-			youtube-dl ${cookies} -o "$tempfile" ${videoformat} --write-sub --sub-lang $subtitlelanguage --embed-subs --merge-output-format mkv --no-mtime --geo-bypass "$youtubeurl"
-			echo "========================STOP YOUTUBE-DL========================="
+			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Sending Trailer link to yt-dlp..."
+			echo "=======================START yt-dlp========================="
+			yt-dlp ${cookies} -o "$tempfile" ${videoformat} --write-sub --sub-lang $subtitlelanguage --embed-subs --merge-output-format mkv --no-mtime --geo-bypass "$youtubeurl"
+			echo "========================STOP yt-dlp========================="
 			if [ -f "$tempfile.mkv" ]; then
 				audiochannels="$(ffprobe -v quiet -print_format json -show_streams "$tempfile.mkv" | jq -r ".[] | .[] | select(.codec_type==\"audio\") | .channels")"
 				width="$(ffprobe -v quiet -print_format json -show_streams "$tempfile.mkv" | jq -r ".[] | .[] | select(.codec_type==\"video\") | .width")"
